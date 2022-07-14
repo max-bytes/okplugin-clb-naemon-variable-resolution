@@ -1,0 +1,29 @@
+name: build
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  build-publish:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup .NET 6.0.x
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+      - name: Set version
+        run: echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Build and publish
+        run: |
+          cd backend
+          dotnet nuget add source https://nuget.pkg.github.com/max-bytes/index.json --name "Github nuget Repository" --username "${{ github.actor }}" --password "${{ secrets.GITHUB_TOKEN }}" --store-password-in-clear-text
+          dotnet pack OKPluginCLBNaemonVariableResolution/OKPluginCLBNaemonVariableResolution.csproj /p:Version=${{ env.VERSION }} -c Release
+          dotnet nuget push "OKPluginCLBNaemonVariableResolution/bin/Release/OKPluginCLBNaemonVariableResolution.${{ env.VERSION }}.nupkg" --source "Github nuget Repository"
