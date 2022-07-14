@@ -94,12 +94,15 @@ namespace OKPluginCLBNaemonVariableResolution
             var monmanV1InputLayerset = await layerModel.BuildLayerSet(cfg.MonmanV1InputLayerSet.ToArray(), trans);
             var selfserviceVariablesInputLayerset = await layerModel.BuildLayerSet(cfg.SelfserviceVariablesInputLayerSet.ToArray(), trans);
 
-            var instanceRules = cfg.Stage switch
+            IInstanceRules instanceRules = cfg.Stage switch
             {
-                Stage.Dev => (IInstanceRules)new InstanceRulesDev(),
+                Stage.Dev => new InstanceRulesDev(),
                 Stage.Prod => new InstanceRulesProd(),
                 _ => throw new NotImplementedException(),
             };
+
+            // HACK: disabling generation of dynamic profiles for dev
+            bool generateProfileDynamic = cfg.Stage == Stage.Prod;
 
             var allCategories = await categoryModel.GetByCIID(AllCIIDsSelection.Instance, cmdbInputLayerset, trans, timeThreshold);
             var hosts = await targetHostModel.GetByCIID(AllCIIDsSelection.Instance, cmdbInputLayerset, trans, timeThreshold);
@@ -451,37 +454,40 @@ namespace OKPluginCLBNaemonVariableResolution
                     }
 
                     // TSI Silverpeak
-                    if (hs.Service.Instance == "SDWAN-INT")
+                    if (generateProfileDynamic)
                     {
-                        if (hs.Service.Class == "APP_MGMT" && hs.Service.Type == "SILVERPEAK_ORCHESTRATOR")
+                        if (hs.Service.Instance == "SDWAN-INT")
                         {
-                            hs.Tags.Add("cap_tsi_silverpeak");
-                            hs.Profiles = new List<string>() { "profiledynamic-tsi-silverpeak-orchestrator" };
+                            if (hs.Service.Class == "APP_MGMT" && hs.Service.Type == "SILVERPEAK_ORCHESTRATOR")
+                            {
+                                hs.Tags.Add("cap_tsi_silverpeak");
+                                hs.Profiles = new List<string>() { "profiledynamic-tsi-silverpeak-orchestrator" };
+                            }
+                            if (hs.Service.Class == "APP_ROUTING" && hs.Service.Type == "SILVERPEAK_DEVICE")
+                            {
+                                hs.Tags.Add("cap_tsi_silverpeak");
+                                hs.Profiles = new List<string>() { "profiledynamic-tsi-silverpeak-device" };
+                            }
                         }
-                        if (hs.Service.Class == "APP_ROUTING" && hs.Service.Type == "SILVERPEAK_DEVICE")
-                        {
-                            hs.Tags.Add("cap_tsi_silverpeak");
-                            hs.Profiles = new List<string>() { "profiledynamic-tsi-silverpeak-device" };
-                        }
-                    }
 
-                    // TSI Versa
-                    if (hs.Service.Instance == "SDWAN-INT")
-                    {
-                        if (hs.Service.Class == "APP_MGMT" && hs.Service.Type == "VERSA_ORCHESTRATOR")
+                        // TSI Versa
+                        if (hs.Service.Instance == "SDWAN-INT")
                         {
-                            hs.Tags.Add("cap_tsi_versa");
-                            hs.Profiles = new List<string>() { "profiledynamic-tsi-versa-orchestrator" };
-                        }
-                        if (hs.Service.Class == "APP_MGMT" && hs.Service.Type == "VERSA_DIRECTOR")
-                        {
-                            hs.Tags.Add("cap_tsi_versa");
-                            hs.Profiles = new List<string>() { "profiledynamic-tsi-versa-orchestrator" };
-                        }
-                        if (hs.Service.Class == "APP_ROUTING" && hs.Service.Type == "VERSA_DEVICE")
-                        {
-                            hs.Tags.Add("cap_tsi_versa");
-                            hs.Profiles = new List<string>() { "profiledynamic-tsi-versa-device" };
+                            if (hs.Service.Class == "APP_MGMT" && hs.Service.Type == "VERSA_ORCHESTRATOR")
+                            {
+                                hs.Tags.Add("cap_tsi_versa");
+                                hs.Profiles = new List<string>() { "profiledynamic-tsi-versa-orchestrator" };
+                            }
+                            if (hs.Service.Class == "APP_MGMT" && hs.Service.Type == "VERSA_DIRECTOR")
+                            {
+                                hs.Tags.Add("cap_tsi_versa");
+                                hs.Profiles = new List<string>() { "profiledynamic-tsi-versa-orchestrator" };
+                            }
+                            if (hs.Service.Class == "APP_ROUTING" && hs.Service.Type == "VERSA_DEVICE")
+                            {
+                                hs.Tags.Add("cap_tsi_versa");
+                                hs.Profiles = new List<string>() { "profiledynamic-tsi-versa-device" };
+                            }
                         }
                     }
                 }
