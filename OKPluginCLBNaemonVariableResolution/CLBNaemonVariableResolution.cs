@@ -7,10 +7,14 @@ using Omnikeeper.Base.Model.TraitBased;
 using Omnikeeper.Base.Utils;
 using Omnikeeper.Base.Utils.ModelContext;
 using Omnikeeper.Entity.AttributeValues;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace OKPluginCLBNaemonVariableResolution
 {
@@ -24,6 +28,7 @@ namespace OKPluginCLBNaemonVariableResolution
         private readonly GenericTraitEntityModel<NaemonVariableV1, long> naemonV1VariableModel;
         private readonly GenericTraitEntityModel<SelfServiceVariable, (string refType, string refID, string name)> selfServiceVariableModel;
         private readonly GenericTraitEntityModel<Profile, long> profileModel;
+        private readonly GenericTraitEntityModel<Module, long> moduleModel;
         private readonly GenericTraitEntityModel<Category, string> categoryModel;
         private readonly GenericTraitEntityModel<ServiceAction, string> serviceActionModel;
         private readonly GenericTraitEntityModel<Interface, string> interfaceModel;
@@ -34,7 +39,7 @@ namespace OKPluginCLBNaemonVariableResolution
         public CLBNaemonVariableResolution(ILayerModel layerModel, IRelationModel relationModel, IAttributeModel attributeModel,
             GenericTraitEntityModel<TargetHost, string> targetHostModel, GenericTraitEntityModel<TargetService, string> targetServiceModel, 
             GenericTraitEntityModel<NaemonVariableV1, long> naemonV1VariableModel, GenericTraitEntityModel<SelfServiceVariable, (string refType, string refID, string name)> selfServiceVariableModel,
-            GenericTraitEntityModel<Profile, long> profileModel,
+            GenericTraitEntityModel<Profile, long> profileModel, GenericTraitEntityModel<Module, long> moduleModel,
             GenericTraitEntityModel<Category, string> categoryModel, GenericTraitEntityModel<ServiceAction, string> serviceActionModel,
             GenericTraitEntityModel<Interface, string> interfaceModel, GenericTraitEntityModel<Group, string> groupModel,
             GenericTraitEntityModel<NaemonInstanceV1, string> naemonInstanceModel, GenericTraitEntityModel<TagV1> tagModel)
@@ -46,6 +51,7 @@ namespace OKPluginCLBNaemonVariableResolution
             this.naemonV1VariableModel = naemonV1VariableModel;
             this.selfServiceVariableModel = selfServiceVariableModel;
             this.profileModel = profileModel;
+            this.moduleModel = moduleModel;
             this.categoryModel = categoryModel;
             this.serviceActionModel = serviceActionModel;
             this.interfaceModel = interfaceModel;
@@ -110,6 +116,7 @@ namespace OKPluginCLBNaemonVariableResolution
             var naemonV1Variables = await naemonV1VariableModel.GetByCIID(AllCIIDsSelection.Instance, monmanV1InputLayerset, trans, timeThreshold);
             var selfServiceVariables = await selfServiceVariableModel.GetByCIID(AllCIIDsSelection.Instance, selfserviceVariablesInputLayerset, trans, timeThreshold);
             var profiles = await profileModel.GetByDataID(AllCIIDsSelection.Instance, monmanV1InputLayerset, trans, timeThreshold);
+            var modules = await moduleModel.GetByDataID(AllCIIDsSelection.Instance, monmanV1InputLayerset, trans, timeThreshold);
             var serviceActions = await serviceActionModel.GetByCIID(AllCIIDsSelection.Instance, cmdbInputLayerset, trans, timeThreshold);
             var interfaces = await interfaceModel.GetByCIID(AllCIIDsSelection.Instance, cmdbInputLayerset, trans, timeThreshold);
             var groups = await groupModel.GetByCIID(AllCIIDsSelection.Instance, cmdbInputLayerset, trans, timeThreshold);
@@ -711,9 +718,97 @@ namespace OKPluginCLBNaemonVariableResolution
                 }
             }
 
-            // filter out targets which are not monitored by any naemon instance
-            // TODO: really necessary?
-            var extremelyFilteredHOS = evenMoreFilteredHOS;//.Where(kv => targetsWithAtLeastOneNaemonInstanceMonitoringIt.Contains(kv.Key)).ToList();
+            // naemon templating
+            var modulesByName = modules.GroupBy(kv => kv.Value.Name, kv => kv.Value).ToDictionary(g => g.Key, g => g.First());
+            foreach (var (ciid, hs) in evenMoreFilteredHOS)
+            {
+                // DYNAMICMODULES
+                if ("YES".Equals(hs.GetVariableValue("DYNAMICMODULES"), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    // LOM Hardware monitoring
+                    if ("YES".Equals(hs.GetVariableValue("DYNAMICMODULES_LOM"), StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        var lomTypesString = hs.GetVariableValue("LOMTYPE");
+                        if (lomTypesString != null)
+                        {
+                            var lomTypes = lomTypesString.Split(",");
+                            foreach(var lomType in lomTypes)
+                            {
+                                var lomTypeTrimmed = lomType.Trim();
+                                var lomModule = $"lom-{lomTypeTrimmed}".ToLowerInvariant();
+
+                                // use module only if exists
+                                if (modulesByName.ContainsKey(lomModule))
+                                {
+                                    // add as prefixed use directive
+                                    hs.UseDirective = hs.UseDirective.Prepend($"mod-{lomModule}").ToList();
+                                }
+                            }
+                        }
+                    }
+
+                    // NRPE Agent base check, using module "base-dynamic-nrpe-agent"
+                    if ("YES".Equals(hs.GetVariableValue("HASNRPE"), StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        var agentBaseModule = "base-dynamic-nrpe-agent";
+                        // use module only if exists
+                        if (modulesByName.ContainsKey(agentBaseModule))
+                        {
+                            // add as suffixed use directive
+                            hs.UseDirective.Add($"mod-{agentBaseModule}");
+                        }
+                    }
+                }
+            }
+                //    foreach ($ciDataRef as $id => $ci) {
+                //$ciDataRef[$id]['USES_PREFIX_TEMPLATES'] = [];
+                //$ciDataRef[$id]['USES_SUFFIX_TEMPLATES'] = [];
+
+
+
+                //        /* DYNAMICMODULES */
+                //        if (strtoupper(getCiVariable($ciDataRef[$id], 'DYNAMICMODULES')) == 'YES')
+                //        {
+
+                //            /* LOM Hardware monitoring */
+                //            if (strtoupper(getCiVariable($ciDataRef[$id], 'DYNAMICMODULES_LOM')) == 'YES')
+                //            {
+                //        $lomTypesString = getCiVariable($ciDataRef[$id], 'LOMTYPE');
+                //        $lomTypes = explode(',', $lomTypesString);
+
+                //                foreach ($lomTypes as $lomType) {
+                //            $lomTypeTrimmed = trim($lomType);
+
+                //            $lomModule = strtolower('lom-'. $lomTypeTrimmed);
+
+                //                    // use module only if exists
+                //                    if (array_key_exists($lomModule,$modulesByName))
+                //                    {
+                //                        array_push($ciDataRef[$id]['USES_PREFIX_TEMPLATES'], 'mod-'. $lomModule);
+                //                    }
+                //                }
+                //            }
+
+                //            /* NRPE Agent base check, using module "base-dynamic-nrpe-agent" */
+                //            if (strtoupper(getCiVariable($ciDataRef[$id], 'HASNRPE')) == 'YES')
+                //            {
+                //        $agent_base_module = 'base-dynamic-nrpe-agent';
+
+                //                // use module only if exists
+                //                if (array_key_exists($agent_base_module,$modulesByName))
+                //                {
+                //            $ciDataRef[$id]['USES_SUFFIX_TEMPLATES'] = ['mod-'. $agent_base_module];
+                //                }
+                //            }
+
+
+                //        }
+                //    }
+
+
+                // filter out targets which are not monitored by any naemon instance
+                // TODO: really necessary?
+                var extremelyFilteredHOS = evenMoreFilteredHOS;//.Where(kv => targetsWithAtLeastOneNaemonInstanceMonitoringIt.Contains(kv.Key)).ToList();
 
             if (!lostTraceOfDebugTargetCMDB && debugTargetCMDBID != null)
             {
@@ -725,6 +820,7 @@ namespace OKPluginCLBNaemonVariableResolution
                     lostTraceOfDebugTargetCMDB = true;
                 }
             }
+
 
             // write output
             var attributeFragments = new List<BulkCIAttributeDataLayerScope.Fragment>();

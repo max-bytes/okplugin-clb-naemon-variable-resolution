@@ -1,4 +1,7 @@
-﻿namespace OKPluginCLBNaemonVariableResolution
+﻿using System;
+using System.Collections.Generic;
+
+namespace OKPluginCLBNaemonVariableResolution
 {
     public interface IInstanceRules
     {

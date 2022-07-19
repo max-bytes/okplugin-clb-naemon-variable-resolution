@@ -1,4 +1,5 @@
 ﻿using Omnikeeper.Base.Entity;
+using System;
 using System.Text.Json;
 
 namespace OKPluginCLBNaemonVariableResolution
@@ -308,6 +309,23 @@ namespace OKPluginCLBNaemonVariableResolution
         public string Name;
 
         public Profile()
+        {
+            ID = 0L;
+            Name = "";
+        }
+    }
+
+    [TraitEntity("monman_v2.varres.module", TraitOriginType.Plugin)]
+    public class Module : TraitEntity
+    {
+        [TraitAttribute("id", "naemon_module.id")]
+        [TraitEntityID]
+        public long ID;
+
+        [TraitAttribute("name", "naemon_module.name")]
+        public string Name;
+
+        public Module()
         {
             ID = 0L;
             Name = "";
