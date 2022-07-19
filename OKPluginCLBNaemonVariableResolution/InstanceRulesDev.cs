@@ -51,7 +51,7 @@ namespace OKPluginCLBNaemonVariableResolution
         public bool FilterProfileFromCmdbCategory(Category category)
         {
             return category.Group == "MONITORING" &&
-                (Regex.IsMatch(category.Name, "profile-.*", RegexOptions.IgnoreCase) || Regex.IsMatch(category.Name, "profiletsc-.*", RegexOptions.IgnoreCase) || Regex.IsMatch(category.Name, "profiledev-.*", RegexOptions.IgnoreCase));
+                (Regex.IsMatch(category.Name, "profiledev-.*", RegexOptions.IgnoreCase));
         }
 
         public bool FilterNaemonInstance(NaemonInstanceV1 naemonInstance)
