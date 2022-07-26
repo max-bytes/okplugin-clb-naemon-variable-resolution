@@ -10,7 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Omnikeeper.Base" Version="19.*" />
+    <PackageReference Include="Omnikeeper.Base" Version="20.*" />
+	  
   </ItemGroup>
 
 	<Target Name="CopyPackage" AfterTargets="Pack" Condition="'$(Configuration)' == 'Debug' ">

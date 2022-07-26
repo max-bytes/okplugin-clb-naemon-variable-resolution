@@ -133,10 +133,10 @@ namespace OKPluginCLBNaemonVariableResolution
             return true;
         }
 
-        public ISet<string> GetDependentLayerIDs(JsonDocument config, ILogger logger)
+        public Task<ISet<string>> GetDependentLayerIDs(JsonDocument config, ILogger logger, IModelContextBuilder modelContextBuilder)
         {
             var cfg = ParseConfig(config);
-            return cfg.MonmanLayers.Concat(cfg.ThrukLayers).ToHashSet();
+            return Task.FromResult((ISet<string>)cfg.MonmanLayers.Concat(cfg.ThrukLayers).ToHashSet());
         }
 
         public class Config

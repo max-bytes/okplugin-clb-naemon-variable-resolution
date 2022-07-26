@@ -163,10 +163,10 @@ namespace OKPluginCLBNaemonVariableResolution
                 return (customVariablesA, customVariablesB, differentVariables);
         }
 
-        public ISet<string> GetDependentLayerIDs(JsonDocument config, ILogger logger)
+        public Task<ISet<string>> GetDependentLayerIDs(JsonDocument config, ILogger logger, IModelContextBuilder modelContextBuilder)
         {
             var cfg = ParseConfig(config);
-            return cfg.SourceLayers.ToHashSet();
+            return Task.FromResult((ISet<string>)cfg.SourceLayers.ToHashSet());
         }
     }
 

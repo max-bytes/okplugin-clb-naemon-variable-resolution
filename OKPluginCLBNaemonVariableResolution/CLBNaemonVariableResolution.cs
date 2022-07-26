@@ -760,55 +760,10 @@ namespace OKPluginCLBNaemonVariableResolution
                     }
                 }
             }
-                //    foreach ($ciDataRef as $id => $ci) {
-                //$ciDataRef[$id]['USES_PREFIX_TEMPLATES'] = [];
-                //$ciDataRef[$id]['USES_SUFFIX_TEMPLATES'] = [];
 
-
-
-                //        /* DYNAMICMODULES */
-                //        if (strtoupper(getCiVariable($ciDataRef[$id], 'DYNAMICMODULES')) == 'YES')
-                //        {
-
-                //            /* LOM Hardware monitoring */
-                //            if (strtoupper(getCiVariable($ciDataRef[$id], 'DYNAMICMODULES_LOM')) == 'YES')
-                //            {
-                //        $lomTypesString = getCiVariable($ciDataRef[$id], 'LOMTYPE');
-                //        $lomTypes = explode(',', $lomTypesString);
-
-                //                foreach ($lomTypes as $lomType) {
-                //            $lomTypeTrimmed = trim($lomType);
-
-                //            $lomModule = strtolower('lom-'. $lomTypeTrimmed);
-
-                //                    // use module only if exists
-                //                    if (array_key_exists($lomModule,$modulesByName))
-                //                    {
-                //                        array_push($ciDataRef[$id]['USES_PREFIX_TEMPLATES'], 'mod-'. $lomModule);
-                //                    }
-                //                }
-                //            }
-
-                //            /* NRPE Agent base check, using module "base-dynamic-nrpe-agent" */
-                //            if (strtoupper(getCiVariable($ciDataRef[$id], 'HASNRPE')) == 'YES')
-                //            {
-                //        $agent_base_module = 'base-dynamic-nrpe-agent';
-
-                //                // use module only if exists
-                //                if (array_key_exists($agent_base_module,$modulesByName))
-                //                {
-                //            $ciDataRef[$id]['USES_SUFFIX_TEMPLATES'] = ['mod-'. $agent_base_module];
-                //                }
-                //            }
-
-
-                //        }
-                //    }
-
-
-                // filter out targets which are not monitored by any naemon instance
-                // TODO: really necessary?
-                var extremelyFilteredHOS = evenMoreFilteredHOS;//.Where(kv => targetsWithAtLeastOneNaemonInstanceMonitoringIt.Contains(kv.Key)).ToList();
+            // filter out targets which are not monitored by any naemon instance
+            // TODO: really necessary?
+            var extremelyFilteredHOS = evenMoreFilteredHOS;//.Where(kv => targetsWithAtLeastOneNaemonInstanceMonitoringIt.Contains(kv.Key)).ToList();
 
             if (!lostTraceOfDebugTargetCMDB && debugTargetCMDBID != null)
             {
