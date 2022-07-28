@@ -390,6 +390,8 @@ namespace OKPluginCLBNaemonVariableResolution
                         numSteps++;
                     }
                 }
+                if (location == "00EMPTY")
+                    location = "";
                 hs.AddVariables(
                     new Variable("LOCATION", "FIXED", Regex.Replace(location ?? "", @"\p{C}+", string.Empty))
                 );
@@ -542,12 +544,16 @@ namespace OKPluginCLBNaemonVariableResolution
 
                 var customerNickname = hs.CustomerNickname;
 
-                var osSupportGroupName = "00EMPTY";
+                var osSupportGroupName = "";
                 if (hs.OSSupportGroup.HasValue && groups.TryGetValue(hs.OSSupportGroup.Value, out var osSupportGroup))
                     osSupportGroupName = osSupportGroup.Name;
-                var appSupportGroupName = "00EMPTY";
+                if (osSupportGroupName == "00EMPTY")
+                    osSupportGroupName = "";
+                var appSupportGroupName = "";
                 if (hs.AppSupportGroup.HasValue && groups.TryGetValue(hs.AppSupportGroup.Value, out var appSupportGroup))
                     appSupportGroupName = appSupportGroup.Name;
+                if (appSupportGroupName == "00EMPTY")
+                    appSupportGroupName = "";
 
                 string monitoringProfile;
                 if (hs.Profiles.Count == 1)
