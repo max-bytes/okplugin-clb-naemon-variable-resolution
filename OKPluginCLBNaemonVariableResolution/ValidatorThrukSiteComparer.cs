@@ -132,7 +132,7 @@ namespace OKPluginCLBNaemonVariableResolution
                 foreach (var vb in variablesOnlyInB)
                     issueAccumulator.TryAdd("variable_only_in_one_site", $"{vb.Key}@{b.Value.Name}", $"Custom variable {vb.Key} on host {a.Value.Name} is only present in site {peerKeyB}, missing in site {peerKeyA}", a.Key, b.Key);
                 foreach (var d in differentVariables)
-                        issueAccumulator.TryAdd("variable_value_different", d.a.Key, $"Custom variable {d.a.Key} on host {a.Value.Name} is different between site {peerKeyA} and {peerKeyB} (\"{d.a.Value.GetRawText()}\" vs. \"{d.b.Value.GetRawText()}\")", a.Key, b.Key);
+                        issueAccumulator.TryAdd("variable_value_different", $"{d.a.Key}@{a.Value.Name}", $"Custom variable {d.a.Key} on host {a.Value.Name} is different between site {peerKeyA} and {peerKeyB} (\"{d.a.Value.GetRawText()}\" vs. \"{d.b.Value.GetRawText()}\")", a.Key, b.Key);
             }
             catch (Exception e)
             {
