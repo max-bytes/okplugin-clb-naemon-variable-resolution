@@ -4,8 +4,8 @@ using System.Text.Json;
 
 namespace OKPluginCLBNaemonVariableResolution
 {
-    [TraitEntity("monman_v2.varres.naemon_variable_v1", TraitOriginType.Plugin)]
-    public class NaemonVariableV1 : TraitEntity
+    [TraitEntity("monman_v2.config_rendering.naemon_variable_v1", TraitOriginType.Plugin)]
+    public class NaemonVariableV1New : TraitEntity
     {
         [TraitAttribute("id", "naemon_variable.id")]
         [TraitEntityID]
@@ -30,7 +30,7 @@ namespace OKPluginCLBNaemonVariableResolution
         public long isSecretLong;
         public bool isSecret => isSecretLong != 0L;
 
-        public NaemonVariableV1()
+        public NaemonVariableV1New()
         {
             ID = 0L;
             refType = "";
@@ -42,8 +42,8 @@ namespace OKPluginCLBNaemonVariableResolution
         }
     }
 
-    [TraitEntity("monman_v2.varres.selfservice_variable", TraitOriginType.Plugin)]
-    public class SelfServiceVariable : TraitEntity
+    [TraitEntity("monman_v2.config_rendering.selfservice_variable", TraitOriginType.Plugin)]
+    public class SelfServiceVariableNew : TraitEntity
     {
         [TraitAttribute("refType", "naemon_variable.reftype")]
         [TraitEntityID]
@@ -60,7 +60,7 @@ namespace OKPluginCLBNaemonVariableResolution
         [TraitAttribute("value", "naemon_variable.value")]
         public string value;
 
-        public SelfServiceVariable()
+        public SelfServiceVariableNew()
         {
             refType = "";
             refID = "";
@@ -69,8 +69,8 @@ namespace OKPluginCLBNaemonVariableResolution
         }
     }
 
-    [TraitEntity("monman_v2.varres.naemon_instance_v1", TraitOriginType.Plugin)]
-    public class NaemonInstanceV1 : TraitEntity
+    [TraitEntity("monman_v2.config_rendering.naemon_instance_v1", TraitOriginType.Plugin)]
+    public class NaemonInstanceV1New : TraitEntity
     {
         [TraitAttribute("id", "naemon_instance.id")]
         [TraitEntityID]
@@ -88,7 +88,7 @@ namespace OKPluginCLBNaemonVariableResolution
         [TraitRelation("runsOn", "runs_on", true, new string[] { "tsa_cmdb.host" })]
         public Guid? RunsOn;
 
-        public NaemonInstanceV1()
+        public NaemonInstanceV1New()
         {
             ID = "";
             Name = "";
@@ -98,20 +98,20 @@ namespace OKPluginCLBNaemonVariableResolution
         }
     }
 
-    [TraitEntity("monman_v2.varres.tag_v1", TraitOriginType.Plugin)]
-    public class TagV1 : TraitEntity
+    [TraitEntity("monman_v2.config_rendering.tag_v1", TraitOriginType.Plugin)]
+    public class TagV1New : TraitEntity
     {
         [TraitAttribute("name", "naemon_instance_tag.tag")]
         public string Name;
 
-        public TagV1()
+        public TagV1New()
         {
             Name = "";
         }
     }
 
-    [TraitEntity("monman_v2.varres.target", TraitOriginType.Plugin)]
-    public class Target : TraitEntity
+    [TraitEntity("monman_v2.config_rendering.target", TraitOriginType.Plugin)]
+    public class TargetNew : TraitEntity
     {
         [TraitAttribute("id", "cmdb.id")]
         [TraitEntityID]
@@ -126,7 +126,7 @@ namespace OKPluginCLBNaemonVariableResolution
         [TraitRelation("monitoredByThrukHosts", "is_monitored_by_thruk_host", true, new string[] { "monman_v2.thruk_host" })]
         public Guid[] MonitoredByThrukHosts;
 
-        public Target()
+        public TargetNew()
         {
             ID = "";
             ResolvedVariables = null;
@@ -135,8 +135,8 @@ namespace OKPluginCLBNaemonVariableResolution
         }
     }
 
-    [TraitEntity("monman_v2.varres.target_host", TraitOriginType.Plugin)]
-    public class TargetHost : TraitEntity
+    [TraitEntity("monman_v2.config_rendering.target_host", TraitOriginType.Plugin)]
+    public class TargetHostNew : TraitEntity
     {
         [TraitAttribute("hostID", "cmdb.host.id")]
         [TraitEntityID]
@@ -196,7 +196,7 @@ namespace OKPluginCLBNaemonVariableResolution
         [TraitRelation("runsOn", "runs_on", true)]
         public Guid[] RunsOn;
 
-        public TargetHost()
+        public TargetHostNew()
         {
             ID = "";
             Hostname = null;
@@ -220,8 +220,8 @@ namespace OKPluginCLBNaemonVariableResolution
         }
     }
 
-    [TraitEntity("monman_v2.varres.target_service", TraitOriginType.Plugin)]
-    public class TargetService : TraitEntity
+    [TraitEntity("monman_v2.config_rendering.target_service", TraitOriginType.Plugin)]
+    public class TargetServiceNew : TraitEntity
     {
         [TraitAttribute("serviceID", "cmdb.service.id")]
         [TraitEntityID]
@@ -275,7 +275,7 @@ namespace OKPluginCLBNaemonVariableResolution
         [TraitRelation("runsOn", "runs_on", true)]
         public Guid[] RunsOn;
 
-        public TargetService()
+        public TargetServiceNew()
         {
             ID = "";
             Name = null;
@@ -297,8 +297,8 @@ namespace OKPluginCLBNaemonVariableResolution
         }
     }
 
-    [TraitEntity("monman_v2.varres.profile", TraitOriginType.Plugin)]
-    public class Profile : TraitEntity
+    [TraitEntity("monman_v2.config_rendering.profile", TraitOriginType.Plugin)]
+    public class ProfileNew : TraitEntity
     {
         [TraitAttribute("id", "naemon_profile.id")]
         [TraitEntityID]
@@ -307,15 +307,15 @@ namespace OKPluginCLBNaemonVariableResolution
         [TraitAttribute("name", "naemon_profile.name")]
         public string Name;
 
-        public Profile()
+        public ProfileNew()
         {
             ID = 0L;
             Name = "";
         }
     }
 
-    [TraitEntity("monman_v2.varres.module", TraitOriginType.Plugin)]
-    public class Module : TraitEntity
+    [TraitEntity("monman_v2.config_rendering.module", TraitOriginType.Plugin)]
+    public class ModuleNew : TraitEntity
     {
         [TraitAttribute("id", "naemon_module.id")]
         [TraitEntityID]
@@ -324,15 +324,15 @@ namespace OKPluginCLBNaemonVariableResolution
         [TraitAttribute("name", "naemon_module.name")]
         public string Name;
 
-        public Module()
+        public ModuleNew()
         {
             ID = 0L;
             Name = "";
         }
     }
 
-    [TraitEntity("monman_v2.varres.category", TraitOriginType.Plugin)]
-    public class Category : TraitEntity
+    [TraitEntity("monman_v2.config_rendering.category", TraitOriginType.Plugin)]
+    public class CategoryNew : TraitEntity
     {
         [TraitAttribute("id", "cmdb.category.id")]
         [TraitEntityID]
@@ -353,7 +353,7 @@ namespace OKPluginCLBNaemonVariableResolution
         [TraitRelation("members", "has_category_member", true)]
         public Guid[] Members;
 
-        public Category()
+        public CategoryNew()
         {
             ID = "";
             Name = "";
@@ -364,8 +364,8 @@ namespace OKPluginCLBNaemonVariableResolution
         }
     }
 
-    [TraitEntity("monman_v2.varres.customer", TraitOriginType.Plugin)]
-    public class Customer : TraitEntity
+    [TraitEntity("monman_v2.config_rendering.customer", TraitOriginType.Plugin)]
+    public class CustomerNew : TraitEntity
     {
         [TraitAttribute("id", "cmdb.customer.id")]
         [TraitEntityID]
@@ -377,7 +377,7 @@ namespace OKPluginCLBNaemonVariableResolution
         [TraitRelation("associatedCIs", "is_assigned_to_customer", false)]
         public Guid[] AssociatedCIs;
 
-        public Customer()
+        public CustomerNew()
         {
             ID = "";
             Nickname = "";
@@ -385,8 +385,8 @@ namespace OKPluginCLBNaemonVariableResolution
         }
     }
 
-    [TraitEntity("monman_v2.varres.service_action", TraitOriginType.Plugin)]
-    public class ServiceAction : TraitEntity
+    [TraitEntity("monman_v2.config_rendering.service_action", TraitOriginType.Plugin)]
+    public class ServiceActionNew : TraitEntity
     {
         [TraitAttribute("id", "cmdb.service_action.id")]
         [TraitEntityID]
@@ -404,7 +404,7 @@ namespace OKPluginCLBNaemonVariableResolution
         [TraitAttribute("type", "cmdb.service_action.type")]
         public string Type;
 
-        public ServiceAction()
+        public ServiceActionNew()
         {
             ID = "";
             ServiceID = "";
@@ -414,8 +414,8 @@ namespace OKPluginCLBNaemonVariableResolution
         }
     }
 
-    [TraitEntity("monman_v2.varres.interface", TraitOriginType.Plugin)]
-    public class Interface : TraitEntity
+    [TraitEntity("monman_v2.config_rendering.interface", TraitOriginType.Plugin)]
+    public class InterfaceNew : TraitEntity
     {
         [TraitAttribute("id", "cmdb.interface.id")]
         [TraitEntityID]
@@ -433,7 +433,7 @@ namespace OKPluginCLBNaemonVariableResolution
         [TraitAttribute("ip", "cmdb.interface.ip", optional: true)]
         public string? IP;
 
-        public Interface()
+        public InterfaceNew()
         {
             ID = "";
             Name = null;
@@ -443,8 +443,8 @@ namespace OKPluginCLBNaemonVariableResolution
         }
     }
 
-    [TraitEntity("monman_v2.varres.group", TraitOriginType.Plugin)]
-    public class Group : TraitEntity
+    [TraitEntity("monman_v2.config_rendering.group", TraitOriginType.Plugin)]
+    public class GroupNew : TraitEntity
     {
         [TraitAttribute("id", "cmdb.group.id")]
         [TraitEntityID]
@@ -453,75 +453,10 @@ namespace OKPluginCLBNaemonVariableResolution
         [TraitAttribute("name", "cmdb.group.name")]
         public string Name;
 
-        public Group()
+        public GroupNew()
         {
             ID = "";
             Name = "";
-        }
-    }
-
-    [TraitEntity("monman_v2.thruk_host", TraitOriginType.Plugin)]
-    public class ThrukHost : TraitEntity
-    {
-        [TraitAttribute("name", "thruk.host.name")]
-        [TraitEntityID]
-        public string Name;
-
-        [TraitAttribute("peerKey", "thruk.host.peer_key")]
-        [TraitEntityID]
-        public string PeerKey;
-
-        [TraitAttribute("customVariables", "thruk.host.custom_variables")]
-        public JsonDocument CustomVariables;
-
-        [TraitAttribute("checkCommand", "thruk.host.check_command", optional: true)] // TODO: set optional: false
-        public string CheckCommand;
-
-        [TraitRelation("services", "belongs_to_thruk_host", false, new string[] { "monman_v2.thruk_service" })]
-        public Guid[] Services;
-
-        [TraitRelation("cmdbCI", "is_monitored_by_thruk_host", false, new string[] { "monman_v2.varres.target" })]
-        public Guid? CMDBCI;
-
-        public ThrukHost()
-        {
-            Name = "";
-            PeerKey = "";
-            CustomVariables = null;
-            CheckCommand = "";
-            Services = Array.Empty<Guid>();
-            CMDBCI = null;
-        }
-    }
-
-    [TraitEntity("monman_v2.thruk_service", TraitOriginType.Plugin)]
-    public class ThrukService : TraitEntity
-    {
-        [TraitAttribute("hostName", "thruk.service.host_name")]
-        [TraitEntityID]
-        public string HostName;
-
-        [TraitAttribute("peerKey", "thruk.service.peer_key")]
-        [TraitEntityID]
-        public string PeerKey;
-
-        [TraitAttribute("description", "thruk.service.description")]
-        [TraitEntityID]
-        public string Description;
-
-        [TraitAttribute("checkCommand", "thruk.service.check_command", optional: true)] // TODO: set optional: false
-        public string CheckCommand;
-
-        [TraitRelation("host", "belongs_to_thruk_host", true, new string[] { "monman_v2.thruk_host" })]
-        public Guid? Host;
-
-        public ThrukService()
-        {
-            HostName = "";
-            PeerKey = "";
-            Description = "";
-            CheckCommand = "";
-            Host = null;
         }
     }
 }
