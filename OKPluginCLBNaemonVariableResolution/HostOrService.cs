@@ -160,5 +160,10 @@ namespace OKPluginCLBNaemonVariableResolution
             ExternalID = externalID;
             IsSecret = isSecret;
         }
+
+        public Variable CloneWithNewValue(string newValue)
+        {
+            return new Variable(Name, RefType, newValue, Precedence, ExternalID, IsSecret);
+        }
     }
 }

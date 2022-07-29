@@ -390,8 +390,6 @@ namespace OKPluginCLBNaemonVariableResolution
                         numSteps++;
                     }
                 }
-                if (location == "00EMPTY")
-                    location = "";
                 hs.AddVariables(
                     new Variable("LOCATION", "FIXED", Regex.Replace(location ?? "", @"\p{C}+", string.Empty))
                 );
@@ -547,13 +545,9 @@ namespace OKPluginCLBNaemonVariableResolution
                 var osSupportGroupName = "";
                 if (hs.OSSupportGroup.HasValue && groups.TryGetValue(hs.OSSupportGroup.Value, out var osSupportGroup))
                     osSupportGroupName = osSupportGroup.Name;
-                if (osSupportGroupName == "00EMPTY")
-                    osSupportGroupName = "";
                 var appSupportGroupName = "";
                 if (hs.AppSupportGroup.HasValue && groups.TryGetValue(hs.AppSupportGroup.Value, out var appSupportGroup))
                     appSupportGroupName = appSupportGroup.Name;
-                if (appSupportGroupName == "00EMPTY")
-                    appSupportGroupName = "";
 
                 string monitoringProfile;
                 if (hs.Profiles.Count == 1)
@@ -782,6 +776,18 @@ namespace OKPluginCLBNaemonVariableResolution
                 }
             }
 
+            // filter out 00EMPTY
+            foreach(var kv in extremelyFilteredHOS)
+            {
+                foreach(var g in kv.Value.Variables)
+                {
+                    for(var i = 0;i < g.Value.Count;i++)
+                    {
+                        if (g.Value[i].Value == "00EMPTY")
+                            g.Value[i] = g.Value[i].CloneWithNewValue("");
+                    }
+                }
+            }
 
             // write output
             var attributeFragments = new List<BulkCIAttributeDataLayerScope.Fragment>();
